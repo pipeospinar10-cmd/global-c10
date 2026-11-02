@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Lab | Global Economics</title>
+
+<style>
+:root {
+  --bg: #101827;
+  --panel: #1b293c;
+  --panel2: #24354b;
+  --text: #f1f5f9;
+  --muted: #a8b6c9;
+  --blue: #60a5fa;
+  --green: #34d399;
+  --red: #fb7185;
+  --border: #35465d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+header {
+  padding: 35px 20px;
+  text-align: center;
+  background: linear-gradient(135deg,#1e3a5f,#172554);
+}
+
+header h1 {
+  font-size: 36px;
+  margin: 0;
+}
+
+header p { color: #cbd5e1; }
+
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px;
+  background: var(--panel);
+}
+
+nav a {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+main {
+  max-width: 1150px;
+  margin: auto;
+  padding: 20px;
+}
+
+section {
+  background: var(--panel);
+  padding: 22px;
+  border-radius: 14px;
+  margin-bottom: 22px;
+  border: 1px solid var(--border);
+}
+
+h2 { color: var(--blue); }
+
+h3 { color: var(--green); }
+
+button, select, input {
+  padding: 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  margin: 4px;
+}
+
+button {
+  background: var(--blue);
+  color: #101827;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover { opacity: .8; }
+
+input, select {
+  background: var(--panel2);
+  color: white;
+  max-width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  min-width: 500px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+th {
+  background: #263c57;
+  color: var(--blue);
+}
+
+.table-wrap { overflow-x: auto; }
+
+.result {
+  background: var(--panel2);
+  padding: 14px;
+  border-radius: 9px;
+  margin: 10px 0;
+}
+
+.winner {
+  color: var(--green);
+  font-weight: bold;
+}
+
+.step {
+  border-left: 4px solid var(--blue);
+  padding: 12px;
+  margin: 12px 0;
+  background: var(--panel2);
+  border-radius: 5px;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media(max-width:600px) {
+  header h1 { font-size: 27px; }
+  main { padding: 10px; }
+  section { padding: 15px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>DECISION LAB</h1>
+  <p>Global Economics | Grade 10 | Term 1</p>
+  <p>Interactive Decision-Making Simulator</p>
+</header>
+
+<nav>
+  <a href="#theory">Theory</a>
+  <a href="#simulator">Simulator</a>
+  <a href="#criteria">Criteria</a>
+  <a href="#filtering">Filtering</a>
+  <a href="#ai">AI Record</a>
+</nav>
+
+<main>
+
+<section id="theory">
+<h2>1. Understanding Decision Theory</h2>
+
+<p>
+Decision theory helps businesses choose the best alternative
+when the future is uncertain.
+</p>
+
+<h3>Important concepts</h3>
+
+<ul>
+<li><b>Alternative:</b> A possible decision a company can make.</li>
+<li><b>State of Nature:</b> An external event that cannot be controlled.</li>
+<li><b>Payoff:</b> The financial result of a decision.</li>
+<li><b>Probability:</b> The likelihood of an event occurring.</li>
+</ul>
+
+<h3>Decision Criteria</h3>
+
+<div class="result">
+<b>Maximax:</b> Select the alternative with the highest possible payoff.
+</div>
+
+<div class="result">
+<b>Maximin:</b> Select the alternative with the highest minimum payoff.
+</div>
+
+<div class="result">
+<b>Minimax Regret:</b> Select the alternative with the lowest maximum regret.
+</div>
+
+<div class="result">
+<b>EMV / Bayes:</b> Select the alternative with the highest expected monetary value.
+</div>
+</section>
+
+<section id="simulator">
+<h2>2. Interactive Decision Simulator</h2>
+
+<p>
+Edit the values below to simulate a business decision.
+All calculations update automatically.
+</p>
+
+<label>Choose a scenario:</label>
+<select id="scenario" onchange="loadScenario()">
+<option value="1">Scenario 1: Investment Decision</option>
+<option value="2">Scenario 2: Production Decision</option>
+</select>
+
+<div id="tableArea" class="table-wrap"></div>
+
+<p class="small">
+Payoffs represent monetary outcomes. Probabilities must total 100%.
+</p>
+
+<button onclick="addAlternative()">+ Add Alternative</button>
+<button onclick="addState()">+ Add State</button>
+<button onclick="resetScenario()">Reset Scenario</button>
+
+<div id="probabilityStatus"></div>
+</section>
+
+<section id="criteria">
+<h2>3. Decision Criteria Results</h2>
+<div id="results"></div>
+</section>
+
+<section id="filtering">
+<h2>4. Staged Filtering Process</h2>
+
+<p>
+The filtering process progressively compares alternatives
+using different decision criteria.
+</p>
+
+<div id="filterSteps"></div>
+</section>
+
+<section>
+<h2>5. Decision Flowchart</h2>
+
+<div class="step">START: Identify the business problem</div>
+<div class="step">STEP 1: Identify possible alternatives</div>
+<div class="step">STEP 2: Identify states of nature</div>
+<div class="step">STEP 3: Assign probabilities</div>
+<div class="step">STEP 4: Calculate payoffs and decision criteria</div>
+<div class="step">STEP 5: Compare alternatives</div>
+<div class="step">STEP 6: Select the best alternative</div>
+<div class="step">END: Make the business decision</div>
+</section>
+
+<section id="ai">
+<h2>6. AI Development Record</h2>
+
+<p>
+This project was developed with assistance from ChatGPT.
+The AI was used to help structure the webpage and implement
+the decision-making calculations.
+</p>
+
+<label>Paste your shared ChatGPT conversation URL:</label>
+<br>
+<input
+  type="url"
+  id="aiLink"
+  placeholder="https://chatgpt.com/share/..."
+  style="width:90%"
+>
+<br>
+<button onclick="saveLink()">Save AI Link</button>
+<p id="linkStatus" class="small"></p>
+</section>
+
+</main>
+
+<footer>
+<p>Decision Lab | Global Economics | Grade 10</p>
+<p>Learning to make better decisions under uncertainty.</p>
+</footer>
+
+<script>
+const scenarios = {
+  1: {
+    states: [
+      {name:"High Demand", p:0.5},
+      {name:"Low Demand", p:0.5}
+    ],
+    alternatives: [
+      {name:"Large Investment", payoffs:[10000,-4000]},
+      {name:"Medium Investment", payoffs:[7000,2000]},
+      {name:"Small Investment", payoffs:[4000,2500]}
+    ]
+  },
+  2: {
+    states: [
+      {name:"High Demand", p:0.4},
+      {name:"Medium Demand", p:0.35},
+      {name:"Low Demand", p:0.25}
+    ],
+    alternatives: [
+      {name:"Mass Production", payoffs:[12000,4000,-5000]},
+      {name:"Balanced Production", payoffs:[8000,6000,1000]},
+      {name:"Limited Production", payoffs:[5000,3500,2500]}
+    ]
+  }
+};
+
+let data;
+
+function loadScenario() {
+  const selected = document.getElementById("scenario").value;
+  data = JSON.parse(JSON.stringify(scenarios[selected]));
+  render();
+}
+
+function render() {
+  const states = data.states;
+  const alternatives = data.alternatives;
+
+  let html = "<table><thead><tr><th>Alternative</th>";
+
+  states.forEach((s,j) => {
+    html += `<th>
+      <input value="${s.name}"
+      onchange="editState(${j},'name',this.value)">
+      <br>
+      Probability (%)
+      <input type="number" min="0" max="100" step="1"
+      value="${s.p*100}"
+      onchange="editState(${j},'p',this.value)"
+      style="width:75px">
+    </th>`;
+  });
+
+  html += "</tr></thead><tbody>";
+
+  alternatives.forEach((a,i) => {
+    html += `<tr>
+      <td><input value="${a.name}"
+      onchange="editAlternative(${i},'name',this.value)"></td>`;
+
+    a.payoffs.forEach((v,j) => {
+      html += `<td><input type="number" value="${v}"
+      onchange="editPayoff(${i},${j},this.value)"
+      style="width:100px"></td>`;
+    });
+
+    html += `</tr>`;
+  });
+
+  html += "</tbody></table>";
+
+  document.getElementById("tableArea").innerHTML = html;
+
+  calculate();
+}
+
+function editState(i,field,value) {
+  if(field === "p") {
+    data.states[i].p = Number(value)/100;
+  } else {
+    data.states[i].name = value;
+  }
+  calculate();
+}
+
+function editAlternative(i,field,value) {
+  data.alternatives[i][field] = value;
+  calculate();
+}
+
+function editPayoff(i,j,value) {
+  data.alternatives[i].payoffs[j] = Number(value);
+  calculate();
+}
+
+function addAlternative() {
+  const n = data.alternatives.length + 1;
+
+  data.alternatives.push({
+    name:"Alternative " + n,
+    payoffs:data.states.map(() => 0)
+  });
+
+  render();
+}
+
+function addState() {
+  const n = data.states.length + 1;
+
+  data.states.push({
+    name:"State " + n,
+    p:0
+  });
+
+  data.alternatives.forEach(a => a.payoffs.push(0));
+
+  render();
+}
+
+function resetScenario() {
+  loadScenario();
+}
+
+function calculate() {
+  const alternatives = data.alternatives;
+  const states = data.states;
+
+  const probabilitySum = states.reduce((s,x)=>s+x.p,0);
+
+  const status = document.getElementById("probabilityStatus");
+
+  const valid = Math.abs(probabilitySum-1)<0.000001;
+
+  status.innerHTML = valid
+    ? '<p class="winner">✓ Probabilities total 100%</p>'
+    : `<p style="color:#fb7185">⚠ Probabilities total ${(probabilitySum*100).toFixed(2)}%. They must total 100%.</p>`;
+
+  const maximax = alternatives.map(a => Math.max(...a.payoffs));
+  const maximin = alternatives.map(a => Math.min(...a.payoffs));
+
+  const bestByState = states.map((s,j)=>
+    Math.max(...alternatives.map(a=>a.payoffs[j]))
+  );
+
+  const regrets = alternatives.map(a=>
+    a.payoffs.map((v,j)=>bestByState[j]-v)
+  );
+
+  const maxRegret = regrets.map(r=>Math.max(...r));
+
+  const emv = alternatives.map(a=>
+    a.payoffs.reduce((sum,v,j)=>sum+v*states[j].p,0)
+  );
+
+  function winners(values,mode) {
+    const target = mode==="max"
+      ? Math.max(...values)
+      : Math.min(...values);
+
+    return values.map((v,i)=>Math.abs(v-target)<0.000001?i:-1)
+      .filter(i=>i>=0);
+  }
+
+  const maxW = winners(maximax,"max");
+  const minW = winners(maximin,"max");
+  const regretW = winners(maxRegret,"min");
+  const emvW = valid ? winners(emv,"max") : [];
+
+  function result(name,values,win,description) {
+    return `
+      <div class="result">
+        <h3>${name}</h3>
+        <p>${description}</p>
+        ${values.map((v,i)=>`
+          <p class="${win.includes(i)?"winner":""}">
+          ${alternatives[i].name}: ${v.toLocaleString("en-US",{maximumFractionDigits:2})}
+          ${win.includes(i)?" ★ SELECTED":""}
+          </p>
+        `).join("")}
+      </div>`;
+  }
+
+  let output = "";
+
+  output += result("MAXIMAX",maximax,maxW,
+    "The optimistic criterion: chooses the highest possible payoff.");
+
+  output += result("MAXIMIN",maximin,minW,
+    "The pessimistic criterion: chooses the highest minimum payoff.");
+
+  output += result("MINIMAX REGRET",maxRegret,regretW,
+    "Chooses the alternative with the smallest maximum regret.");
+
+  output += result("EMV / BAYES",emv,emvW,
+    valid
+    ? "Chooses the alternative with the highest expected monetary value."
+    : "Unavailable until probabilities total 100%.");
+
+  document.getElementById("results").innerHTML = output;
+
+  showFiltering(maxW,minW,regretW,emvW);
+}
+
+function showFiltering(maxW,minW,regretW,emvW) {
+  const all = data.alternatives.map((a,i)=>i);
+
+  const stages = [
+    {name:"Stage 1: Maximax",keep:maxW},
+    {name:"Stage 2: Maximin",keep:minW},
+    {name:"Stage 3: Minimax Regret",keep:regretW},
+    {name:"Stage 4: EMV / Bayes",keep:emvW}
+  ];
+
+  let remaining = [...all];
+
+  let html = `
+    <div class="step">
+      <b>Initial alternatives:</b>
+      ${remaining.map(i=>data.alternatives[i].name).join(", ")}
+    </div>`;
+
+  stages.forEach((stage,index)=>{
+    if(stage.keep.length===0) {
+      html += `<div class="step">${stage.name}: Cannot filter. Check probabilities.</div>`;
+      return;
+    }
+
+    remaining = stage.keep.filter(i=>remaining.includes(i));
+
+    html += `
+      <div class="step">
+        <b>${stage.name}</b><br>
+        Surviving alternatives:
+        ${remaining.length
+          ? remaining.map(i=>data.alternatives[i].name).join(", ")
+          : "No alternatives survived this sequential filter."}
+      </div>`;
+  });
+
+  html += `
+    <div class="result">
+      <b>Final result:</b><br>
+      ${remaining.length
+        ? remaining.map(i=>data.alternatives[i].name).join(", ")
+        : "No alternative survived every stage. Compare criteria independently."}
+    </div>`;
+
+  document.getElementById("filterSteps").innerHTML = html;
+}
+
+function saveLink() {
+  const link = document.getElementById("aiLink").value;
+  const status = document.getElementById("linkStatus");
+
+  if(!link || !/^https:\/\/(chatgpt\.com|chat\.openai\.com)\//i.test(link)) {
+    status.textContent = "Please enter a valid ChatGPT shared conversation URL.";
+    return;
+  }
+
+  status.innerHTML = `AI conversation: <a href="${link}" target="_blank" rel="noopener noreferrer" style="color:#60a5fa">Open shared conversation</a>`;
+}
+
+loadScenario();
+</script>
+
+</body>
+</html>
